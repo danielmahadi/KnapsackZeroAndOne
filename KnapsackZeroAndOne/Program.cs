@@ -19,54 +19,52 @@ namespace KnapsackZeroAndOne
             var valueMatrix = new int[items.Count, maxWeight +1];
             var keepMatrix = new bool[items.Count, maxWeight + 1];
 
+            var cellAbove = new int[maxWeight + 1];
+
             for (var itemIdx = 0; itemIdx < items.Count; itemIdx++)
             {
                 var currentItem = items[itemIdx];
-                var isFirstItem = itemIdx == 0;
 
                 for (var weight = 1; weight <= maxWeight; weight++)
                 {
-                    var choosenVal = 0;
+                    var chosenVal = 0;
                     var keep = false;
 
                     var withinWeightLimit = currentItem.Weight <= weight;
 
-                    if (isFirstItem)
+                    var valueOfCellAbove = cellAbove[weight];
+
+                    if (withinWeightLimit)
                     {
-                        choosenVal = withinWeightLimit ? currentItem.Value : 0;
-                        keep = withinWeightLimit;
-                    }
-                    else
-                    {
-                        var valueOfCellAbove = valueMatrix[itemIdx - 1, weight];
-                        
-                        if (withinWeightLimit)
+                        var remainingWeight = weight - currentItem.Weight;
+                        var otherPossibleVal = cellAbove[remainingWeight];
+
+                        var finalPossibleVal = currentItem.Value + otherPossibleVal;
+
+                        if (valueOfCellAbove <= finalPossibleVal)
                         {
-                            var remainingWeight = weight - currentItem.Weight;
-                            var otherPossibleVal = valueMatrix[itemIdx - 1, remainingWeight];
-
-                            var finalPossibleVal = currentItem.Value + otherPossibleVal;
-
-                            if (valueOfCellAbove <= finalPossibleVal)
-                            {
-                                choosenVal = finalPossibleVal;
-                                keep = true;
-                            }
-                            else
-                            {
-                                choosenVal = valueOfCellAbove;
-                                keep = false;
-                            }
+                            chosenVal = finalPossibleVal;
+                            keep = true;
                         }
                         else
                         {
-                            choosenVal = valueOfCellAbove;
+                            chosenVal = valueOfCellAbove;
                             keep = false;
                         }
                     }
+                    else
+                    {
+                        chosenVal = valueOfCellAbove;
+                        keep = false;
+                    }
 
-                    valueMatrix[itemIdx, weight] = choosenVal;
+                    valueMatrix[itemIdx, weight] = chosenVal;
                     keepMatrix[itemIdx, weight] = keep;
+                }
+
+                for (var i = 0; i < maxWeight; i++)
+                {
+                    cellAbove[i] = valueMatrix[itemIdx, i];
                 }
             }
 
