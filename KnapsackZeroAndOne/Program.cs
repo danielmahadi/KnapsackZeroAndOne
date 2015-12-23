@@ -91,24 +91,14 @@ namespace KnapsackZeroAndOne
 
             for (var i = items.Count -1; i >= 0; i--)
             {
-                for (var w = remainingWeight; w > 0; w--)
-                {
-                    if (w == remainingWeight)
-                    {
-                        var isKeep = keepMatrix[i, w];
+                var isKeep = keepMatrix[i, remainingWeight];
 
-                        if (!isKeep)
-                            break;
+                if (!isKeep)
+                    continue;
 
-                        var currentItem = items[i];
-                        selectedItems.Add(currentItem);
-                        remainingWeight -= currentItem.Weight;
-                        
-                    }
-
-                    break;
-                }
-
+                var currentItem = items[i];
+                selectedItems.Add(currentItem);
+                remainingWeight -= currentItem.Weight;
             }
 
             return selectedItems;
